@@ -92,7 +92,7 @@ public class UserController {
     /*
     * 展示发表内容
     * */
-    @PostMapping()
+    @PostMapping("/getContent")
     public RespEntity<List<String>> getContent(@RequestBody ContentDTO contentDTO){
          QueryWrapper<Creation> wrapper=new QueryWrapper<>();
          wrapper.lambda().eq(Creation::getUserId,contentDTO.getUserId());
@@ -108,7 +108,7 @@ public class UserController {
     /*
     * 删除内容
     * */
-    @PostMapping()
+    @PostMapping("/delete")
     public RespEntity deleteContent(@RequestBody ContentDTO contentDTO){
         QueryWrapper<Creation> wrapper=new QueryWrapper<>();
         wrapper.lambda().eq(Creation::getId,contentDTO.getId());
@@ -119,7 +119,7 @@ public class UserController {
     /*
     修改内容
     */
-    @PostMapping()
+    @PostMapping("/modify")
     public RespEntity<CreationVO> modifyContent(@RequestBody ContentDTO contentDTO){
         UpdateWrapper<Creation> wrapper=new UpdateWrapper<>();
         wrapper.lambda().eq(Creation::getId,contentDTO.getId())
