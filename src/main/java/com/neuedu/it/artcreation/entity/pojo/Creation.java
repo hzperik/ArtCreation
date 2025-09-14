@@ -3,6 +3,7 @@ package com.neuedu.it.artcreation.entity.pojo;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -25,6 +26,7 @@ public class Creation {
     @TableField("s_keyword")
     private String keyword;
     @TableField("s_createtime")
+    @DateTimeFormat(pattern = "YYYY-MM-dd")
     private Date createTime;
     @TableField(exist = false)
     private String userNickName;

@@ -1,6 +1,7 @@
 package com.neuedu.it.artcreation.controller;
 
 import com.neuedu.it.artcreation.entity.RespEntity;
+import com.neuedu.it.artcreation.entity.dto.PublishDTO;
 import com.neuedu.it.artcreation.entity.pojo.Creation;
 import com.neuedu.it.artcreation.entity.pojo.User;
 import com.neuedu.it.artcreation.service.CreationService;
@@ -14,6 +15,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,10 +64,11 @@ public class CreationController {
         }
     }
     @PostMapping("/creation/publish")
-    public RespEntity pulish(HttpServletRequest request, Creation creation, MultipartFile pic, String ai_img_url) throws IOException {
+    public RespEntity pulish(HttpServletRequest request,PublishDTO dto) throws IOException {
+        MultipartFile pic = dto.getPic();
         System.out.println("进入方法");
         User user = (User) request.getAttribute("curUser");
-        creation.setUserId(user.getId());
+        dto.setUserId(user.getId());
         if(!pic.isEmpty()){
             String dir = getClass().getClassLoader().getResource("").getPath() + "/" + UUID.randomUUID();
             File dirFile = new File(dir);
@@ -74,12 +77,11 @@ public class CreationController {
             }
             String fileName = new Date().getTime() + "_" + pic.getOriginalFilename();
             pic.transferTo(new File(dir+"/"+fileName));
-            creation.setImg(fileName);
+            dto.setImg(fileName);
         }
-
-        creation.setClick(0);
-        creation.setCreateTime(new Date());
-        creationService.save(creation);
-        return new RespEntity("2000", "发布成功", creation);
+        dto.setClick(0);
+        dto.setCreateTime(new Date());
+        creationService.save(dto);
+        return new RespEntity("2000", "发布成功", dto);
     }
 }
