@@ -12,7 +12,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,13 +66,14 @@ public class CreationController {
         }
     }
     @PostMapping("/creation/publish")
+    @Transactional(rollbackFor = Exception.class)
     public RespEntity pulish(HttpServletRequest request,PublishDTO dto) throws IOException {
         MultipartFile pic = dto.getPic();
         System.out.println("进入方法");
         User user = (User) request.getAttribute("curUser");
         dto.setUserId(user.getId());
         if(!pic.isEmpty()){
-            String dir = getClass().getClassLoader().getResource("").getPath() + "/" + UUID.randomUUID();
+            String dir = getClass().getClassLoader().getResource("").getPath() + UUID.randomUUID();
             File dirFile = new File(dir);
             if (!dirFile.exists()) {
                 dirFile.mkdirs();
@@ -81,7 +84,9 @@ public class CreationController {
         }
         dto.setClick(0);
         dto.setCreateTime(new Date());
-        creationService.save(dto);
-        return new RespEntity("2000", "发布成功", dto);
+        Creation creation = new Creation();
+        BeanUtils.copyProperties(dto, creation);
+        creationService.save(creation);
+        return new RespEntity("2000", "发布成功", creation);
     }
 }
