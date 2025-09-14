@@ -1,11 +1,17 @@
 package com.neuedu.it.artcreation.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.neuedu.it.artcreation.entity.RespEntity;
+import com.neuedu.it.artcreation.entity.dto.ContentDTO;
+import com.neuedu.it.artcreation.entity.pojo.Creation;
 import com.neuedu.it.artcreation.entity.pojo.User;
+import com.neuedu.it.artcreation.entity.vo.CreationVO;
+import com.neuedu.it.artcreation.service.CreationService;
 import com.neuedu.it.artcreation.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,15 +19,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @CrossOrigin
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private CreationService creationService;
     @Value("${my.reg_score}")
     private int score;
 
@@ -29,16 +35,16 @@ public class UserController {
     public RespEntity register(@RequestBody User user) {
         user.setScore(score);
         userService.save(user);
-        return new RespEntity("2000", "注册成功", null);
+        return RespEntity.success("注册成功", null);
     }
 
     @PostMapping("/login")
-    public RespEntity login(String loginName, String loginPwd){
+    public RespEntity<Map<String,Object>> login(String loginName, String loginPwd){
         QueryWrapper<User> qw=new QueryWrapper<>();
         qw.lambda().eq(User::getLoginName, loginName).eq(User::getLoginPwd, loginPwd);
         User user=userService.getOne(qw);
         if(user==null)
-            return new RespEntity("4000", "用户名或密码错误", null);
+            return RespEntity.error( "用户名或密码错误", null);
 //        user.setLoginPwd(null);
 //        JwtBuilder builder = Jwts.builder();
 //        builder.setId(UUID.randomUUID().toString())
@@ -67,7 +73,7 @@ public class UserController {
                 .signWith(SignatureAlgorithm.HS256, "123456")
                 .compact();
         System.out.println(jwttoken);
-        return new RespEntity("2000", "登录成功", Map.of("user",user,"token",jwttoken));
+        return RespEntity.success("登录成功", Map.of("user",user,"token",jwttoken));
     }
 
 //    @PostMapping("/reg")
@@ -81,5 +87,52 @@ public class UserController {
 //        userService.save(user);
 //        return new RespEntity("2000", "注册成功", null);
 //    }
+
+
+    /*
+    * 展示发表内容
+    * */
+    @PostMapping()
+    public RespEntity<List<String>> getContent(@RequestBody ContentDTO contentDTO){
+         QueryWrapper<Creation> wrapper=new QueryWrapper<>();
+         wrapper.lambda().eq(Creation::getUserId,contentDTO.getUserId());
+         List<Creation> creations=creationService.list(wrapper);
+         List<String> contents=new ArrayList<>();
+         for(Creation creation:creations){
+             contents.add(creation.getContent());
+         }
+         return RespEntity.success("查询成功",contents);
+    }
+
+
+    /*
+    * 删除内容
+    * */
+    @PostMapping()
+    public RespEntity deleteContent(@RequestBody ContentDTO contentDTO){
+        QueryWrapper<Creation> wrapper=new QueryWrapper<>();
+        wrapper.lambda().eq(Creation::getId,contentDTO.getId());
+        creationService.remove(wrapper);
+        return RespEntity.success("查询成功",null);
+    }
+
+    /*
+    修改内容
+    */
+    @PostMapping()
+    public RespEntity<CreationVO> modifyContent(@RequestBody ContentDTO contentDTO){
+        UpdateWrapper<Creation> wrapper=new UpdateWrapper<>();
+        wrapper.lambda().eq(Creation::getId,contentDTO.getId())
+                .set(Creation::getContent,contentDTO.getContent())
+                .set(Creation::getTitle,contentDTO.getTitle());
+        Boolean bool=creationService.update(wrapper);
+        if(!bool){
+            return RespEntity.error("修改失败",null);
+        }
+        Creation creation=creationService.getById(contentDTO.getId());
+        CreationVO cv=new CreationVO();
+        BeanUtils.copyProperties(creation,cv);
+        return RespEntity.success("查询成功",cv);
+    }
 
 }

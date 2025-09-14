@@ -17,11 +17,11 @@ public class Creation {
     @TableField("s_img")
     private String img;
     @TableField("s_click")
-    private int click;
+    private Integer click;
     @TableField("s_userid")
-    private int userId;
+    private Integer userId;
     @TableField("s_cgy")
-    private int cgyId;
+    private Integer cgyId;
     @TableField("s_keyword")
     private String keyword;
     @TableField("s_createtime")
@@ -60,27 +60,27 @@ public class Creation {
         this.img = img;
     }
 
-    public int getClick() {
+    public Integer getClick() {
         return click;
     }
 
-    public void setClick(int click) {
+    public void setClick(Integer click) {
         this.click = click;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public int getCgyId() {
+    public Integer getCgyId() {
         return cgyId;
     }
 
-    public void setCgyId(int cgyId) {
+    public void setCgyId(Integer cgyId) {
         this.cgyId = cgyId;
     }
 
