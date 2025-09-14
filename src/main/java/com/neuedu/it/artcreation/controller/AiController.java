@@ -14,16 +14,16 @@ public class AiController {
     @Qualifier("chatClientTxt")
     private ChatClient chatClientTxt;
     @PostMapping("/ai/txt")
-    public RespEntity aiTxt(String ask) {
+    public RespEntity<String> aiTxt(String ask) {
         String answer = chatClientTxt.prompt()
                 .user(ask)
                 .call()
                 .content();
         System.out.println(answer);
-        return new RespEntity("2000","成功",answer);
+        return RespEntity.success("成功",answer);
     }
     @PostMapping(value = "/ai/img")
-    public RespEntity image(String ask,@RequestParam(value = "num",defaultValue = "1") int num) {
+    public RespEntity<String> image(String ask, @RequestParam(value = "num",defaultValue = "1") int num) {
         // 创建 RestTemplate 实例
         RestTemplate restTemplate = new RestTemplate();
         // 设置请求头
@@ -50,10 +50,10 @@ public class AiController {
                 requestEntity,
                 String.class
         );
-        return new RespEntity("2000","成功",response.getBody());
+        return RespEntity.success("成功",response.getBody());
     }
     @RequestMapping(value = "/ai/imgstatus")
-    public RespEntity isFinish(String taskId) {
+    public RespEntity<String> isFinish(String taskId) {
         System.out.println("进入isFinish");
         // 创建RestTemplate实例
         RestTemplate restTemplate = new RestTemplate();
@@ -69,7 +69,7 @@ public class AiController {
                 requestEntity,
                 String.class
         );
-        return new RespEntity("2000","成功",response.getBody());
+        return RespEntity.success("成功",response.getBody());
     }
 
 }

@@ -67,7 +67,7 @@ public class CreationController {
     }
     @PostMapping("/creation/publish")
     @Transactional(rollbackFor = Exception.class)
-    public RespEntity pulish(HttpServletRequest request,PublishDTO dto) throws IOException {
+    public RespEntity<Creation> pulish(HttpServletRequest request,PublishDTO dto) throws IOException {
         MultipartFile pic = dto.getPic();
         System.out.println("进入方法");
         User user = (User) request.getAttribute("curUser");
@@ -87,6 +87,6 @@ public class CreationController {
         Creation creation = new Creation();
         BeanUtils.copyProperties(dto, creation);
         creationService.save(creation);
-        return new RespEntity("2000", "发布成功", creation);
+        return RespEntity.success( "发布成功", creation);
     }
 }

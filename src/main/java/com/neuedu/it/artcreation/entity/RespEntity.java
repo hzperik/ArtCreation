@@ -1,13 +1,19 @@
 package com.neuedu.it.artcreation.entity;
 
-public class RespEntity {
+import java.util.Map;
+
+public class RespEntity<T>{
     private String code;
     private String msg;
-    private Object data;
-    public RespEntity(String code, String msg, Object data){
+    private T data;
+    public RespEntity(String code, String msg, T data){
         this.code = code;
         this.msg = msg;
         this.data = data;
+    }
+
+    public static <T> RespEntity<T> error(String msg, T data) {
+        return new RespEntity<>("400",msg,data);
     }
 
     public String getCode() {
@@ -30,7 +36,11 @@ public class RespEntity {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
+    }
+
+    static public <T> RespEntity<T> success(String msg,T data){
+        return new RespEntity<>("200",msg,data);
     }
 }
