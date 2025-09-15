@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.neuedu.it.artcreation.entity.RespEntity;
 import com.neuedu.it.artcreation.entity.dto.ContentDTO;
+import com.neuedu.it.artcreation.entity.dto.LoginDTO;
 import com.neuedu.it.artcreation.entity.pojo.Creation;
 import com.neuedu.it.artcreation.entity.pojo.User;
 import com.neuedu.it.artcreation.entity.vo.CreationVO;
@@ -31,7 +32,7 @@ public class UserController {
     @Value("${my.reg_score}")
     private int score;
 
-     @PostMapping("/reg")
+    @PostMapping("/reg")
     public RespEntity register(@RequestBody User user) {
         user.setScore(score);
         userService.save(user);
@@ -39,9 +40,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public RespEntity<Map<String,Object>> login(String loginName, String loginPwd){
+    public RespEntity<Map<String,Object>> login(@RequestBody LoginDTO loginDTO){
         QueryWrapper<User> qw=new QueryWrapper<>();
-        qw.lambda().eq(User::getLoginName, loginName).eq(User::getLoginPwd, loginPwd);
+        qw.lambda().eq(User::getLoginName, loginDTO.getLoginName()).eq(User::getLoginPwd, loginDTO.getLoginPwd());
         User user=userService.getOne(qw);
         if(user==null)
             return RespEntity.error( "用户名或密码错误", null);
