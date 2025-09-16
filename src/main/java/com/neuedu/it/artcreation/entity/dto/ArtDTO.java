@@ -8,7 +8,5 @@ import java.util.Date;
 public class ArtDTO {
     private String title;
     private String keyword;
-    @DateTimeFormat(pattern = "YYYY-MM-dd")
     private String imageUrl;
-    private String dir;
 }

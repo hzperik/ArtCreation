@@ -13,12 +13,8 @@ import java.util.Date;
 public class PublishDTO{
     private String title;
     private String content;
-    private String img;
-    private Integer click;
     private Integer userId;
     private Integer cgyId;
     private String keyword;
-    @DateTimeFormat(pattern = "YYYY-MM-dd")
-    private Date createTime;
     MultipartFile pic;
 }

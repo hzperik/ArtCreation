@@ -34,47 +34,66 @@ import java.util.UUID;
 public class CreationController {
     @Autowired
     private CreationService creationService;
+//    @PostMapping("/creation/publish")
+//    @Transactional(rollbackFor = Exception.class)
+//    public RespEntity<Creation> pulish(HttpServletRequest request,PublishDTO dto) throws IOException {
+//        Creation creation = new Creation();
+//        BeanUtils.copyProperties(dto, creation);
+//        MultipartFile pic = dto.getPic();
+//        System.out.println("进入方法");
+//        User user = (User) request.getAttribute("curUser");
+//        creation.setUserId(user.getId());
+//        creation.setClick(0);
+//        creation.setCreateTime(new Date());
+//        if(!pic.isEmpty()){
+//            byte[] imageBytes = pic.getBytes();
+//            creation.setImgBytes(imageBytes);
+//            creation.setImg(pic.getOriginalFilename());
+//        }
+//        creationService.save(creation);
+//        return RespEntity.success( "发布成功", creation);
+//    }
+
     @PostMapping("/creation/publish")
     @Transactional(rollbackFor = Exception.class)
-    public RespEntity<Creation> pulish(HttpServletRequest request,PublishDTO dto) throws IOException {
-        MultipartFile pic = dto.getPic();
-        System.out.println("进入方法");
-        User user = (User) request.getAttribute("curUser");
-        dto.setUserId(user.getId());
-        if(!pic.isEmpty()){
-            String dir = getClass().getClassLoader().getResource("").getPath() + UUID.randomUUID();
-            File dirFile = new File(dir);
-            if (!dirFile.exists()) {
-                dirFile.mkdirs();
-            }
-            String fileName = new Date().getTime() + "_" + pic.getOriginalFilename();
-            pic.transferTo(new File(dir+"/"+fileName));
-            dto.setImg(fileName);
-        }
-        dto.setClick(0);
-        dto.setCreateTime(new Date());
-        Creation creation = new Creation();
-        BeanUtils.copyProperties(dto, creation);
-        creationService.save(creation);
-        return RespEntity.success( "发布成功", creation);
-    }
-
-    @PostMapping("/creation/art")
-    @Transactional(rollbackFor = Exception.class)
     public RespEntity<Creation> art(HttpServletRequest request,@RequestBody ArtDTO dto) throws IOException {
-        ImgTool imgTool = new ImgTool();
-        String imgResult = imgTool.saveImageFromUrl(dto.getImageUrl(), dto.getDir());
-        User user = (User)request.getAttribute("curUser");
+//        ImgTool imgTool = new ImgTool();
+//        String imgResult = imgTool.saveImageFromUrl(dto.getImageUrl());
         Creation creation = new Creation();
+        String imageUrl = dto.getImageUrl();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        // 创建HTTP GET请求
+        HttpGet httpGet = new HttpGet(imageUrl);
+        // 执行请求
+        CloseableHttpResponse response = httpClient.execute(httpGet);
+        try {
+            // 检查响应状态
+            int statusCode = response.getStatusLine().getStatusCode();
+            System.out.println("响应状态码: " + statusCode);
+
+            if (statusCode >= 200 && statusCode < 300) {
+                // 获取响应体
+                HttpEntity entity = response.getEntity();
+                byte[] imageBytes = EntityUtils.toByteArray(entity);
+                creation.setImgBytes(imageBytes);
+                // 生成文件名
+                String fileName = imageUrl.split("\\?")[0].substring(imageUrl.lastIndexOf("/") + 1);
+                String jsonString = "[\"" + fileName + "\"]";
+                creation.setContent(jsonString);
+            }
+        User user = (User)request.getAttribute("curUser");
         creation.setClick(0);
         creation.setCreateTime(new Date());
         creation.setKeyword(dto.getKeyword());
         creation.setTitle(dto.getTitle());
         creation.setUserId(user.getId());
         creation.setUserNickName(user.getNickName());
-        String jsonString = "[\""+imgResult+"\"]";
-        creation.setContent(jsonString);
         creationService.save(creation);
         return RespEntity.success("发布成功",creation);
+        }
+         finally {
+            response.close();
+            httpClient.close();
+        }
     }
 }

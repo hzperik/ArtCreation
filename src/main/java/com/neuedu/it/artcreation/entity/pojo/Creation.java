@@ -3,10 +3,11 @@ package com.neuedu.it.artcreation.entity.pojo;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-
+@Data
 @TableName("creations")
 public class Creation {
     @TableId("s_id")
@@ -28,93 +29,10 @@ public class Creation {
     @TableField("s_createtime")
     @DateTimeFormat(pattern = "YYYY-MM-dd")
     private Date createTime;
+    @TableField("s_imgfile")
+    private byte[] imgBytes;
     @TableField(exist = false)
     private String userNickName;
     @TableField(exist = false)
     private String cgyName;
-    public Integer getId() {
-        return id;
-    }
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
-    }
-
-    public Integer getClick() {
-        return click;
-    }
-
-    public void setClick(Integer click) {
-        this.click = click;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getCgyId() {
-        return cgyId;
-    }
-
-    public void setCgyId(Integer cgyId) {
-        this.cgyId = cgyId;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getUserNickName() {
-        return userNickName;
-    }
-
-    public void setUserNickName(String userNickName) {
-        this.userNickName = userNickName;
-    }
-
-    public String getCgyName() {
-        return cgyName;
-    }
-
-    public void setCgyName(String cgyName) {
-        this.cgyName = cgyName;
-    }
 }

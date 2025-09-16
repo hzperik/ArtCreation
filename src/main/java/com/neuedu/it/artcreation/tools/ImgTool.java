@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ImgTool {
-    public String saveImageFromUrl(String imageUrl, String dir) throws IOException {
+    public String saveImageFromUrl(String imageUrl) throws IOException {
         // 创建HttpClient实例
         CloseableHttpClient httpClient = HttpClients.createDefault();
         // 创建HTTP GET请求
@@ -32,8 +32,8 @@ public class ImgTool {
                 // 生成文件名
                 String fileName = imageUrl.split("\\?")[0].substring(imageUrl.lastIndexOf("/") + 1);
                 // 保存图片
-                Path imagePath = Paths.get(dir, fileName);
-                Files.write(imagePath, imageBytes);
+//                Path imagePath = Paths.get(dir, fileName);
+//                Files.write(imagePath, imageBytes);
 
                 return fileName;
             }
