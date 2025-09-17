@@ -31,10 +31,10 @@ public class Creation {
     private Date createTime;
     @TableField("s_imgfile")
     private byte[] imgBytes;
-    @TableField("s_url")
-    private String url;
     @TableField(exist = false)
     private String userNickName;
     @TableField(exist = false)
     private String cgyName;
+    @TableField("s_url")
+    private String url;
 }

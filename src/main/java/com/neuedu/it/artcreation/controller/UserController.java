@@ -90,50 +90,5 @@ public class UserController {
 //    }
 
 
-    /*
-    * 展示发表内容
-    * */
-    @PostMapping("/getContent")
-    public RespEntity<List<String>> getContent(@RequestBody ContentDTO contentDTO){
-         QueryWrapper<Creation> wrapper=new QueryWrapper<>();
-         wrapper.lambda().eq(Creation::getUserId,contentDTO.getUserId());
-         List<Creation> creations=creationService.list(wrapper);
-         List<String> contents=new ArrayList<>();
-         for(Creation creation:creations){
-             contents.add(creation.getContent());
-         }
-         return RespEntity.success("查询成功",contents);
-    }
-
-
-    /*
-    * 删除内容
-    * */
-    @PostMapping("/delete")
-    public RespEntity deleteContent(@RequestBody ContentDTO contentDTO){
-        QueryWrapper<Creation> wrapper=new QueryWrapper<>();
-        wrapper.lambda().eq(Creation::getId,contentDTO.getId());
-        creationService.remove(wrapper);
-        return RespEntity.success("查询成功",null);
-    }
-
-    /*
-    修改内容
-    */
-    @PostMapping("/modify")
-    public RespEntity<CreationVO> modifyContent(@RequestBody ContentDTO contentDTO){
-        UpdateWrapper<Creation> wrapper=new UpdateWrapper<>();
-        wrapper.lambda().eq(Creation::getId,contentDTO.getId())
-                .set(Creation::getContent,contentDTO.getContent())
-                .set(Creation::getTitle,contentDTO.getTitle());
-        Boolean bool=creationService.update(wrapper);
-        if(!bool){
-            return RespEntity.error("修改失败",null);
-        }
-        Creation creation=creationService.getById(contentDTO.getId());
-        CreationVO cv=new CreationVO();
-        BeanUtils.copyProperties(creation,cv);
-        return RespEntity.success("查询成功",cv);
-    }
 
 }
