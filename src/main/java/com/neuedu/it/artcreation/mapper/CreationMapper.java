@@ -20,7 +20,8 @@ public interface CreationMapper extends BaseMapper<Creation> {
             @Result(column = "s_userid",    property = "userId"),
             @Result(column = "s_cgy",       property = "cgyId"),
             @Result(column = "s_keyword",   property = "keyword"),
-            @Result(column = "s_createtime",property = "createTime")
+            @Result(column = "s_createtime",property = "createTime"),
+            @Result(column = "s_url",       property = "url")
     })
     List<Creation> execute(String sql);
 
@@ -34,7 +35,8 @@ public interface CreationMapper extends BaseMapper<Creation> {
             @Result(column = "s_userid",    property = "userId"),
             @Result(column = "s_cgy",       property = "cgyId"),
             @Result(column = "s_keyword",   property = "keyword"),
-            @Result(column = "s_createtime",property = "createTime")
+            @Result(column = "s_createtime",property = "createTime"),
+            @Result(column = "s_url",       property = "url")
     })
     void execute1(String sql);
 

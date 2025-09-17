@@ -104,6 +104,7 @@ public class CreationController {
             creation.setTitle(dto.getTitle());
             creation.setUserId(user.getId());
             creation.setUserNickName(user.getNickName());
+            creation.setUrl(imageUrl);
             creationService.save(creation);
             return RespEntity.success("发布成功",creation);
         }
@@ -122,8 +123,10 @@ public class CreationController {
         wrapper.lambda().eq(Creation::getUserId,contentDTO.getUserId());
         List<Creation> creations=creationService.list(wrapper);
         List<CreationVO> contents=new ArrayList<>();
-        for(Creation creation:creations){
-
+        for(Creation creation:creations) {
+            CreationVO creationVO=new CreationVO();
+            BeanUtils.copyProperties(creation,creationVO);
+            contents.add(creationVO);
         }
         return RespEntity.success("查询成功",contents);
     }
@@ -156,6 +159,6 @@ public class CreationController {
         Creation creation=creationService.getById(contentDTO.getId());
         CreationVO cv=new CreationVO();
         BeanUtils.copyProperties(creation,cv);
-        return RespEntity.success("查询成功",cv);
+        return RespEntity.success("修改成功",cv);
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -96,10 +98,10 @@ public class AiController {
     private CreationMapper creationMapper;
 
     /*
-     * ai查询sql
+     * ai查询sql,返回Creation结果
      * */
-    @PostMapping("/creation/sql")
-    public RespEntity<List<Creation>> createSQL(@RequestBody QuestionDTO questionDTO){
+    @PostMapping("/user/sql")
+    public RespEntity<List<CreationVO>> createSQL(@RequestBody QuestionDTO questionDTO){
         String ask=questionDTO.getQuestion();
         String answer = userChatSQLClient.prompt()
                 .user(ask)
@@ -111,7 +113,13 @@ public class AiController {
             return RespEntity.error("权限不足，无法执行",null);
         }
         List<Creation> creations = creationMapper.execute(answer);
-        return RespEntity.success("成功",creations);
+        List<CreationVO> contents=new ArrayList<>();
+        for(Creation creation:creations) {
+            CreationVO creationVO=new CreationVO();
+            BeanUtils.copyProperties(creation,creationVO);
+            contents.add(creationVO);
+        }
+        return RespEntity.success("成功",contents);
     }
 
     /*

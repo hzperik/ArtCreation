@@ -35,6 +35,6 @@ public class Creation {
     private String userNickName;
     @TableField(exist = false)
     private String cgyName;
-    @TableField("s_imgPath")
-    private String imgPath;
+    @TableField("s_url")
+    private String url;
 }

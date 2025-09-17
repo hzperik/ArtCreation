@@ -88,6 +88,8 @@ public class AiConfig {
                         "  `s_cgy` int DEFAULT NULL,\n" +
                         "  `s_keyword` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,\n" +
                         "  `s_createtime` datetime DEFAULT NULL,\n" +
+                        "  `s_imgfile` LONGBLOB NULL,\n" +
+                        "  `s_url` varchar NULL,\n" +
                         "  PRIMARY KEY (`s_id`)\n" +
                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;" +
                         "例如用户要查询用户id为1发表的内容，则返回如下类似语句：SELECT * from creations where s_userid=1," +
@@ -133,6 +135,8 @@ public class AiConfig {
                         "  `s_cgy` int DEFAULT NULL,\n" +
                         "  `s_keyword` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,\n" +
                         "  `s_createtime` datetime DEFAULT NULL,\n" +
+                        "  `s_imgfile` LONGBLOB NULL,\n" +
+                        "  `s_url` varchar NULL,\n" +
                         "  PRIMARY KEY (`s_id`)\n" +
                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;" +
                         "例如用户要查询用户id为1发表的内容，则返回如下类似语句：SELECT * from creations where s_userid=1," +

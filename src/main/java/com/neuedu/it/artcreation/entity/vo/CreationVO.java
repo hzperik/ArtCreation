@@ -17,7 +17,7 @@ public class CreationVO {
 
     private String content;
 
-    private Image img;
+    private String img;
 
     private Integer click;
 
@@ -27,15 +27,9 @@ public class CreationVO {
 
     private String keyword;
 
-    private String imgPath;
+    private String url;
 
-    public String getImgPath() {
-        return imgPath;
-    }
 
-    public void setImgPath(String imgPath) {
-        this.imgPath = imgPath;
-    }
 
     @DateTimeFormat(pattern = "YYYY-MM-dd")
     private Date createTime;
@@ -64,11 +58,11 @@ public class CreationVO {
         this.content = content;
     }
 
-    public Image getImg() {
+    public String getImg() {
         return img;
     }
 
-    public void setImg(Image img) {
+    public void setImg(String img) {
         this.img = img;
     }
 
@@ -126,5 +120,14 @@ public class CreationVO {
 
     public void setCgyName(String cgyName) {
         this.cgyName = cgyName;
+    }
+
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
