@@ -60,14 +60,12 @@ CREATE TABLE `creations` (
 -- ----------------------------
 -- Table structure for `favs`
 -- ----------------------------
-DROP TABLE IF EXISTS `favs`;
-CREATE TABLE `favs` (
-  `fav_id` int NOT NULL AUTO_INCREMENT,
-  `fav_ask` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `fav_answer` varchar(2000) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `fav_user_id` int DEFAULT NULL,
-  `fav_createtime` datetime DEFAULT NULL,
-  PRIMARY KEY (`fav_id`)
+DROP TABLE IF EXISTS `comment`;
+CREATE TABLE `comment` (
+  `comment_id` int NOT NULL AUTO_INCREMENT,
+  `s_id` int NOT NULL,
+  `comment_content` varchar(2000) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------

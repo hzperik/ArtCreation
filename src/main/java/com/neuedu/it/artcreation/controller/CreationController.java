@@ -1,13 +1,11 @@
 package com.neuedu.it.artcreation.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.neuedu.it.artcreation.entity.RespEntity;
 import com.neuedu.it.artcreation.entity.dto.ArtDTO;
-import com.neuedu.it.artcreation.entity.dto.PublishDTO;
 import com.neuedu.it.artcreation.entity.pojo.Creation;
 import com.neuedu.it.artcreation.entity.pojo.User;
+import com.neuedu.it.artcreation.entity.vo.DisplayVO;
 import com.neuedu.it.artcreation.service.CreationService;
-import com.neuedu.it.artcreation.tools.ImgTool;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -15,19 +13,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @CrossOrigin
@@ -98,6 +89,29 @@ public class CreationController {
             httpClient.close();
         }
     }
-//    @PostMapping("/creation/display")
-//    public RespEntity<Creation> display(@RequestBody Creation creation){
+    @PostMapping("/creation/display")
+    public RespEntity<List<DisplayVO>> display(){
+        List<DisplayVO> displayVOs = new ArrayList<>();
+        List<Creation> creations = creationService.list();
+        int size = creations.size();
+        if (size != 0 && size <= 10){
+            for (Creation creation : creations){
+                DisplayVO displayVO = new DisplayVO();
+                displayVO.setTitle(creation.getTitle());
+                displayVO.setImgUrl(creation.getUrl());
+                displayVOs.add(displayVO);
+            }
+        }
+        else{
+            for (int i = 1;i < size;i++){
+                if (size - i < 10) {
+                    DisplayVO displayVO = new DisplayVO();
+                    displayVO.setTitle(creations.get(i - 1).getTitle());
+                    displayVO.setImgUrl(creations.get(i - 1).getUrl());
+                    displayVOs.add(displayVO);
+                }
+            }
+        }
+        return RespEntity.success("查询成功",displayVOs);
+    }
 }
