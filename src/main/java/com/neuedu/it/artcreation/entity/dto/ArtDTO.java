@@ -7,6 +7,7 @@ import java.util.Date;
 @Data
 public class ArtDTO {
     private String title;
+    private String content;
     private String keyword;
     private String imageUrl;
 }

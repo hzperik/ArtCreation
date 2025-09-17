@@ -79,10 +79,11 @@ public class CreationController {
                 // 生成文件名
                 String fileName = imageUrl.split("\\?")[0].substring(imageUrl.lastIndexOf("/") + 1);
                 String jsonString = "[\"" + fileName + "\"]";
-                creation.setContent(jsonString);
+                creation.setImg(jsonString);
             }
         User user = (User)request.getAttribute("curUser");
         creation.setClick(0);
+        creation.setContent(dto.getContent());
         creation.setCreateTime(new Date());
         creation.setKeyword(dto.getKeyword());
         creation.setTitle(dto.getTitle());
