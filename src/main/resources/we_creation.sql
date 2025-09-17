@@ -49,6 +49,7 @@ CREATE TABLE `creations` (
   `s_keyword` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `s_createtime` datetime DEFAULT NULL,
   `s_imgfile` LONGBLOB DEFAULT NULL,
+  `s_url` varchar(2000) DEFAULT NULL,
   PRIMARY KEY (`s_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

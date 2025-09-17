@@ -83,6 +83,7 @@ public class CreationController {
             }
         User user = (User)request.getAttribute("curUser");
         creation.setClick(0);
+        creation.setUrl(dto.getImageUrl());
         creation.setContent(dto.getContent());
         creation.setCreateTime(new Date());
         creation.setKeyword(dto.getKeyword());
@@ -97,4 +98,6 @@ public class CreationController {
             httpClient.close();
         }
     }
+//    @PostMapping("/creation/display")
+//    public RespEntity<Creation> display(@RequestBody Creation creation){
 }
