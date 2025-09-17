@@ -1,14 +1,20 @@
 package com.neuedu.it.artcreation.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.neuedu.it.artcreation.entity.RespEntity;
 import com.neuedu.it.artcreation.entity.dto.ArtDTO;
+import com.neuedu.it.artcreation.entity.dto.ContentDTO;
 import com.neuedu.it.artcreation.entity.dto.PublishDTO;
 import com.neuedu.it.artcreation.entity.pojo.Creation;
 import com.neuedu.it.artcreation.entity.pojo.User;
+import com.neuedu.it.artcreation.entity.vo.CreationVO;
 import com.neuedu.it.artcreation.service.CreationService;
 import com.neuedu.it.artcreation.tools.ImgTool;
+import com.openai.models.Image;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -17,16 +23,25 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -81,23 +96,66 @@ public class CreationController {
                 String jsonString = "[\"" + fileName + "\"]";
                 creation.setImg(jsonString);
             }
-        User user = (User)request.getAttribute("curUser");
-        creation.setClick(0);
-        creation.setUrl(dto.getImageUrl());
-        creation.setContent(dto.getContent());
-        creation.setCreateTime(new Date());
-        creation.setKeyword(dto.getKeyword());
-        creation.setTitle(dto.getTitle());
-        creation.setUserId(user.getId());
-        creation.setUserNickName(user.getNickName());
-        creationService.save(creation);
-        return RespEntity.success("发布成功",creation);
+            User user = (User)request.getAttribute("curUser");
+            creation.setClick(0);
+            creation.setContent(dto.getContent());
+            creation.setCreateTime(new Date());
+            creation.setKeyword(dto.getKeyword());
+            creation.setTitle(dto.getTitle());
+            creation.setUserId(user.getId());
+            creation.setUserNickName(user.getNickName());
+            creationService.save(creation);
+            return RespEntity.success("发布成功",creation);
         }
-         finally {
+        finally {
             response.close();
             httpClient.close();
         }
     }
-//    @PostMapping("/creation/display")
-//    public RespEntity<Creation> display(@RequestBody Creation creation){
+
+    /*
+     * 展示发表内容
+     * */
+    @PostMapping("/getContent")
+    public RespEntity<List<CreationVO>> getContent(@RequestBody ContentDTO contentDTO, HttpServletResponse response) throws IOException {
+        QueryWrapper<Creation> wrapper=new QueryWrapper<>();
+        wrapper.lambda().eq(Creation::getUserId,contentDTO.getUserId());
+        List<Creation> creations=creationService.list(wrapper);
+        List<CreationVO> contents=new ArrayList<>();
+        for(Creation creation:creations){
+
+        }
+        return RespEntity.success("查询成功",contents);
+    }
+
+
+    /*
+     * 删除内容
+     * */
+    @PostMapping("/delete")
+    public RespEntity deleteContent(@RequestBody ContentDTO contentDTO){
+        QueryWrapper<Creation> wrapper=new QueryWrapper<>();
+        wrapper.lambda().eq(Creation::getId,contentDTO.getId());
+        creationService.remove(wrapper);
+        return RespEntity.success("查询成功",null);
+    }
+
+    /*
+    修改内容
+    */
+    @PostMapping("/modify")
+    public RespEntity<CreationVO> modifyContent(@RequestBody ContentDTO contentDTO){
+        UpdateWrapper<Creation> wrapper=new UpdateWrapper<>();
+        wrapper.lambda().eq(Creation::getId,contentDTO.getId())
+                .set(Creation::getContent,contentDTO.getContent())
+                .set(Creation::getTitle,contentDTO.getTitle());
+        Boolean bool=creationService.update(wrapper);
+        if(!bool){
+            return RespEntity.error("修改失败",null);
+        }
+        Creation creation=creationService.getById(contentDTO.getId());
+        CreationVO cv=new CreationVO();
+        BeanUtils.copyProperties(creation,cv);
+        return RespEntity.success("查询成功",cv);
+    }
 }
