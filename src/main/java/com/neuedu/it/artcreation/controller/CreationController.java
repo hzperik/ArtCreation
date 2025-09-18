@@ -22,6 +22,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
@@ -161,7 +162,8 @@ public class CreationController {
         BeanUtils.copyProperties(creation,cv);
         return RespEntity.success("修改成功",cv);
     }
-    @PostMapping("/creation/display")
+    //展示最新十条数据
+    @PostMapping("/display")
     public RespEntity<List<DisplayVO>> display(){
         List<DisplayVO> displayVOs = new ArrayList<>();
         List<Creation> creations = creationService.list();
@@ -175,7 +177,7 @@ public class CreationController {
             }
         }
         else{
-            for (int i = 1;i < size;i++){
+            for (int i = 1;i <= size;i++){
                 if (size - i < 10) {
                     DisplayVO displayVO = new DisplayVO();
                     displayVO.setTitle(creations.get(i - 1).getTitle());
@@ -186,4 +188,39 @@ public class CreationController {
         }
         return RespEntity.success("查询成功",displayVOs);
     }
+    @PostMapping("/creation/show")
+    public RespEntity<List<DisplayVO>> show(Integer userId){
+        List<DisplayVO> displayVOS = new ArrayList<>();
+        List<Creation> creations = creationService.list();
+        for (Creation creation : creations){
+            if (creation.getUserId().equals(userId)) {
+                DisplayVO displayVO = new DisplayVO();
+                displayVO.setTitle(creation.getTitle());
+                displayVO.setImgUrl(creation.getUrl());
+                displayVOS.add(displayVO);
+            }
+        }
+        int size = displayVOS.size();
+        if (size > 10) {
+            for (int i = 1;i <= size;i++)
+                if (size - i >= 10) {
+                    displayVOS.remove(i);
+                }
+        }
+        return RespEntity.success("查询成功",displayVOS);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
