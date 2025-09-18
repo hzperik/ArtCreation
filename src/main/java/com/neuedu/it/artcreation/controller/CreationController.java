@@ -14,6 +14,7 @@ import com.neuedu.it.artcreation.entity.vo.CreationVO;
 import com.neuedu.it.artcreation.service.CreationService;
 import com.neuedu.it.artcreation.tools.ImgTool;
 import com.openai.models.Image;
+import com.qiniu.common.QiniuException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpEntity;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.stringtemplate.v4.ST;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -82,6 +84,7 @@ public class CreationController {
         HttpGet httpGet = new HttpGet(imageUrl);
         // 执行请求
         CloseableHttpResponse response = httpClient.execute(httpGet);
+        String fileKey;
         try {
             // 检查响应状态
             int statusCode = response.getStatusLine().getStatusCode();
@@ -91,22 +94,24 @@ public class CreationController {
                 // 获取响应体
                 HttpEntity entity = response.getEntity();
                 byte[] imageBytes = EntityUtils.toByteArray(entity);
-                creation.setImgBytes(imageBytes);
+                ImgTool imgTool = new ImgTool();
+                fileKey = imgTool.imgUpload(imageBytes);
+                creation.setImgBytes(fileKey);
                 // 生成文件名
                 String fileName = imageUrl.split("\\?")[0].substring(imageUrl.lastIndexOf("/") + 1);
                 String jsonString = "[\"" + fileName + "\"]";
                 creation.setImg(jsonString);
             }
-        User user = (User)request.getAttribute("curUser");
-        creation.setClick(0);
-        creation.setUrl(dto.getImageUrl());
-        creation.setContent(dto.getContent());
-        creation.setCreateTime(new Date());
-        creation.setKeyword(dto.getKeyword());
-        creation.setTitle(dto.getTitle());
-        creation.setUserId(user.getId());
-        creation.setUserNickName(user.getNickName());
-        creationService.save(creation);
+            User user = (User)request.getAttribute("curUser");
+            creation.setClick(0);
+            creation.setUrl(dto.getImageUrl());
+            creation.setContent(dto.getContent());
+            creation.setCreateTime(new Date());
+            creation.setKeyword(dto.getKeyword());
+            creation.setTitle(dto.getTitle());
+            creation.setUserId(user.getId());
+            creation.setUserNickName(user.getNickName());
+            creationService.save(creation);
         return RespEntity.success("发布成功",creation);
         }
          finally {
@@ -145,15 +150,17 @@ public class CreationController {
     }
     //展示最新十条数据
     @PostMapping("/display")
-    public RespEntity<List<DisplayVO>> display(){
+    public RespEntity<List<DisplayVO>> display() throws QiniuException {
         List<DisplayVO> displayVOs = new ArrayList<>();
         List<Creation> creations = creationService.list();
+        ImgTool imgTool = new ImgTool();
         int size = creations.size();
         if (size != 0 && size <= 10){
             for (Creation creation : creations){
                 DisplayVO displayVO = new DisplayVO();
+                String imgUrl = imgTool.imgDownload(creation.getImgBytes());
                 displayVO.setTitle(creation.getTitle());
-                displayVO.setImgUrl(creation.getUrl());
+                displayVO.setImgUrl(imgUrl);
                 displayVOs.add(displayVO);
             }
         }
@@ -162,7 +169,7 @@ public class CreationController {
                 if (size - i < 10) {
                     DisplayVO displayVO = new DisplayVO();
                     displayVO.setTitle(creations.get(i - 1).getTitle());
-                    displayVO.setImgUrl(creations.get(i - 1).getUrl());
+                    displayVO.setImgUrl(imgTool.imgDownload(creations.get(i - 1).getImgBytes()));
                     displayVOs.add(displayVO);
                 }
             }
@@ -170,15 +177,17 @@ public class CreationController {
         return RespEntity.success("查询成功",displayVOs);
     }
     @PostMapping("/creation/show")
-    public RespEntity<List<DisplayVO>> show(HttpServletRequest request){
+    public RespEntity<List<DisplayVO>> show(HttpServletRequest request) throws QiniuException {
         List<DisplayVO> displayVOS = new ArrayList<>();
         List<Creation> creations = creationService.list();
         User user = (User)request.getAttribute("curUser");
+        ImgTool imgTool = new ImgTool();
         for (Creation creation : creations){
             if (creation.getUserId().equals(user.getId())) {
                 DisplayVO displayVO = new DisplayVO();
+                String imgUrl = imgTool.imgDownload(creation.getImgBytes());
                 displayVO.setTitle(creation.getTitle());
-                displayVO.setImgUrl(creation.getUrl());
+                displayVO.setImgUrl(imgUrl);
                 displayVOS.add(displayVO);
             }
         }

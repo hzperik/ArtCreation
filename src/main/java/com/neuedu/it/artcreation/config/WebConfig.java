@@ -12,6 +12,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new JwtInterceptor())
                 .addPathPatterns("/ai/**")
                 .addPathPatterns("/creation/**")
-                .addPathPatterns("/comment/publish");
+                .addPathPatterns("/comment/**");
     }
 }

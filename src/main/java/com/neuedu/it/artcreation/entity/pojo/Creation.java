@@ -30,7 +30,7 @@ public class Creation {
     @DateTimeFormat(pattern = "YYYY-MM-dd")
     private Date createTime;
     @TableField("s_imgfile")
-    private byte[] imgBytes;
+    private String imgBytes;
     @TableField(exist = false)
     private String userNickName;
     @TableField(exist = false)
