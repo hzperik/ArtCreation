@@ -116,24 +116,6 @@ public class CreationController {
     }
 
     /*
-     * 展示发表内容
-     * */
-    @PostMapping("/getContent")
-    public RespEntity<List<CreationVO>> getContent(@RequestBody ContentDTO contentDTO, HttpServletResponse response) throws IOException {
-        QueryWrapper<Creation> wrapper=new QueryWrapper<>();
-        wrapper.lambda().eq(Creation::getUserId,contentDTO.getUserId());
-        List<Creation> creations=creationService.list(wrapper);
-        List<CreationVO> contents=new ArrayList<>();
-        for(Creation creation:creations) {
-            CreationVO creationVO=new CreationVO();
-            BeanUtils.copyProperties(creation,creationVO);
-            contents.add(creationVO);
-        }
-        return RespEntity.success("查询成功",contents);
-    }
-
-
-    /*
      * 删除内容
      * */
     @PostMapping("/delete")
@@ -141,23 +123,22 @@ public class CreationController {
         QueryWrapper<Creation> wrapper=new QueryWrapper<>();
         wrapper.lambda().eq(Creation::getId,contentDTO.getId());
         creationService.remove(wrapper);
-        return RespEntity.success("查询成功",null);
+        return RespEntity.success("删除成功",null);
     }
-
     /*
     修改内容
     */
     @PostMapping("/modify")
     public RespEntity<CreationVO> modifyContent(@RequestBody ContentDTO contentDTO){
         UpdateWrapper<Creation> wrapper=new UpdateWrapper<>();
-        wrapper.lambda().eq(Creation::getId,contentDTO.getId())
-                .set(Creation::getContent,contentDTO.getContent())
-                .set(Creation::getTitle,contentDTO.getTitle());
-        Boolean bool=creationService.update(wrapper);
+        wrapper.lambda().eq(Creation::getId,contentDTO.getId());
+        Creation creation=creationService.getById(contentDTO.getId());
+        creation.setContent(contentDTO.getContent());
+        creation.setTitle(contentDTO.getTitle());
+        Boolean bool=creationService.update(creation,wrapper);
         if(!bool){
             return RespEntity.error("修改失败",null);
         }
-        Creation creation=creationService.getById(contentDTO.getId());
         CreationVO cv=new CreationVO();
         BeanUtils.copyProperties(creation,cv);
         return RespEntity.success("修改成功",cv);
@@ -189,11 +170,12 @@ public class CreationController {
         return RespEntity.success("查询成功",displayVOs);
     }
     @PostMapping("/creation/show")
-    public RespEntity<List<DisplayVO>> show(Integer userId){
+    public RespEntity<List<DisplayVO>> show(HttpServletRequest request){
         List<DisplayVO> displayVOS = new ArrayList<>();
         List<Creation> creations = creationService.list();
+        User user = (User)request.getAttribute("curUser");
         for (Creation creation : creations){
-            if (creation.getUserId().equals(userId)) {
+            if (creation.getUserId().equals(user.getId())) {
                 DisplayVO displayVO = new DisplayVO();
                 displayVO.setTitle(creation.getTitle());
                 displayVO.setImgUrl(creation.getUrl());
@@ -209,18 +191,4 @@ public class CreationController {
         }
         return RespEntity.success("查询成功",displayVOS);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
