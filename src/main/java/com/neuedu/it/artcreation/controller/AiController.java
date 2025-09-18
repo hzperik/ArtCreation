@@ -27,18 +27,6 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class AiController {
-    @Autowired
-    @Qualifier("chatClientTxt")
-    private ChatClient chatClientTxt;
-    @PostMapping("/ai/txt")
-    public RespEntity<String> aiTxt(String ask) {
-        String answer = chatClientTxt.prompt()
-                .user(ask)
-                .call()
-                .content();
-        System.out.println(answer);
-        return RespEntity.success("成功",answer);
-    }
     @PostMapping(value = "/ai/img")
     public RespEntity<String> image(String ask, @RequestParam(value = "num",defaultValue = "1") int num) {
         // 创建 RestTemplate 实例

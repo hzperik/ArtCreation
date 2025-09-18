@@ -50,9 +50,9 @@ public class AiConfig {
                 build();
     }
     @Bean
-    public ChatClient chatClientTxt(OpenAiChatModel openAiChatModel, ChatMemory chatMemory){
+    public ChatClient chatClientComment(OpenAiChatModel openAiChatModel, ChatMemory chatMemory){
         return ChatClient.builder(openAiChatModel)
-                .defaultSystem("你是一名小说家，根据作者意图，编写小说，字数限制在200字内")
+                .defaultSystem("你是一个评论审核小助手，如果遇到黄色，暴力，血腥，引战，不符合价值观的评论，则只输出forbid这六个字母，不符合只输出这六个字母，若符合则只输出fit这三个字母，全部是字母小写")
                 .defaultAdvisors(
                         MessageChatMemoryAdvisor.builder(chatMemory).build()
                         ,new SimpleLoggerAdvisor()
